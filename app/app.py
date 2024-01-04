@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, jsonify
 import torch
 import json
 import torchvision
-from torchvision import models, transforms
+from torchvision import transforms
 from PIL import Image
 
 # 'Flask' 클래스의 인스턴스 생성
@@ -26,7 +26,7 @@ transform = torchvision.transforms.Compose([
                     torchvision.transforms.ToTensor(),        # 텐서 변환 
                 ])
 
-# 이미지 파일의 경로를 입력받아 해당 이미지의 클래스를 예측 
+# 이미지 파일의 경로를 입력받아 해당 이미지의 클래스를 예측
 def predict_image_class(image_path):
     image = Image.open(image_path)
     with torch.no_grad():
@@ -51,17 +51,18 @@ def index():
 @app.route('/predict', methods=['POST'])
 def predict():
     if request.method == 'POST':
-        # if request.files.get('file') is not None:
         file = request.files['file'] # 파일 불러오기 
         file_path = f"C:/Users/alsdu/Desktop/cat_dog_flask/app/static/images/{file.filename}"
         file.save(file_path)
         print("file save OK")
         predicted_class_idx, confidence = predict_image_class(file_path)
-        print(predicted_class_idx, confidence)
         if predicted_class_idx == 1:
             result = "dog"
+            confidence = confidence*100
         else:
             result = "cat"
+            confidence = (1 - confidence)*100
+        print(predicted_class_idx, confidence)
         return jsonify({'result': result, 'confidence': str(confidence)})
 
 # 스크립트가 직접 실행되는 경우에만 Flask 애플리케이션을 실행
@@ -69,3 +70,5 @@ def predict():
 # debug=True로 설정하면 코드 변경이 있을 때마다 서버가 자동으로 재시작
 if __name__ == '__main__': 
     app.run(host='192.168.0.129', port = 5000, debug=True)
+
+
