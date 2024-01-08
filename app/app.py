@@ -22,7 +22,7 @@ with open('../class_index.json', 'r') as f:
 
 # 이미지에 적용할 변환을 순서대로 적용할 수 있는 파이프라인 생성
 transform = torchvision.transforms.Compose([
-                    torchvision.transforms.Resize((224,244)), # 이미지 크기
+                    torchvision.transforms.Resize((224,224)), # 이미지 크기
                     torchvision.transforms.ToTensor(),        # 텐서 변환 
                 ])
 
@@ -39,7 +39,7 @@ def predict_image_class(image_path):
         else:
             predicted_class_idx = 0
         confidence = pred[0][0]
-        return predicted_class_idx, confidence # 예측 클래스, 신뢰도 반환 
+        return predicted_class_idx, confidence # 예측 클래스, 신뢰도 반환
 
 # / 경로에 접속하면, index.html 템플릿을 렌더링하여 보여줌 
 @app.route('/')
@@ -52,7 +52,7 @@ def index():
 def predict():
     if request.method == 'POST':
         file = request.files['file'] # 파일 불러오기 
-        file_path = f"C:/Users/alsdu/Desktop/cat_dog_flask/app/static/images/{file.filename}"
+        file_path = f"C:/Users/alsdu/Desktop/Git_Repo/cat_dog_flask/app/static/images/{file.filename}"
         file.save(file_path)
         print("file save OK")
         predicted_class_idx, confidence = predict_image_class(file_path)
